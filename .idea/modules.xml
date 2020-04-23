@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/EmbSysLab3-1.iml" filepath="$PROJECT_DIR$/EmbSysLab3-1.iml" group="EmbSysLab3-1" />
+      <module fileurl="file://$PROJECT_DIR$/lab31/lab31.iml" filepath="$PROJECT_DIR$/lab31/lab31.iml" group="EmbSysLab3-1/lab31" />
+    </modules>
+  </component>
+</project>
