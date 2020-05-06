@@ -8,11 +8,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.os.Handler;
 
 import java.math.BigInteger;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     EditText nIn;
+    EditText timeIn;
     TextView resText;
 
     @Override
@@ -24,27 +26,39 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         resText = findViewById(R.id.result);
         nIn = findViewById(R.id.N_in);
+        timeIn = findViewById(R.id.Time_in);
     }
 
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.count_btn:
                 if (nIn.getText().toString().length() > 0) {
-                    BigInteger n = new BigInteger(nIn.getText().toString());
-                    Ferma ferma = new Ferma();
-                    BigInteger[] result = ferma.factorization(n);
-                    if (result[0] == null) {
-                        Toast.makeText(this, "Runtime Error", Toast.LENGTH_LONG).show();
+                    if (timeIn.getText().toString().length() > 0) {
+                        BigInteger n = new BigInteger(nIn.getText().toString());
+                        Integer time = Integer.parseInt(timeIn.getText().toString());
+                        Ferma ferma = new Ferma();
+                        BigInteger[] result = ferma.factorization(n, time);
+                        if (result[0] == null) {
+                            Toast.makeText(this, "Runtime Error", Toast.LENGTH_LONG).show();
+                        }
+                        String res = result[0] + ", " + result[1];
+                        resText.setText(res);
                     }
-                    String res = result[0] + ", " + result[1];
-                    resText.setText(res);
                 }
                 break;
         }
     }
 
-    private static class Ferma {
-        public BigInteger[] factorization(BigInteger n) {
+    private class Ferma {
+        public class Exception extends Throwable {
+            public Exception() {
+                super();
+            }
+            public Exception(String errorMessage) {
+                super(errorMessage);
+            }
+        }
+        public BigInteger[] factorization(BigInteger n, Integer time) {
             double start = System.currentTimeMillis(), current;
             boolean isEnd = false;
             long x = (long) Math.sqrt(n.doubleValue());
@@ -64,9 +78,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     isEnd = true;
                 }
                 current = System.currentTimeMillis() - start;
-                if (current > 3000) {
-                    isEnd = true;
-                    return result;
+                try {
+                    if (current > time * 1000) {
+                        isEnd = true;
+                        throw new Exception("Too much time elapsed!");
+                    }
+                } catch (Exception error) {
+                    Toast errorToast = Toast.makeText(MainActivity.this, error.getMessage(), Toast.LENGTH_SHORT);
+                    errorToast.show();
+                    final Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            finish();
+                        }
+                    }, 1000);
                 }
             }
             return result;
